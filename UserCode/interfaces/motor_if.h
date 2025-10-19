@@ -38,17 +38,16 @@
 #define USE_VESC
 
 #ifdef USE_DJI
-#include "drivers/DJI.h"
+#    include "drivers/DJI.h"
 #endif
 
 #ifdef USE_TB6612
-#include "drivers/tb6612.h"
+#    include "drivers/tb6612.h"
 #endif
 
 #ifdef USE_VESC
-#include "drivers/vesc.h"
+#    include "drivers/vesc.h"
 #endif
-
 
 typedef enum
 {
@@ -68,21 +67,21 @@ typedef enum
  */
 typedef struct
 {
-    bool enable;                 //< 是否启用控制
-    MotorType_t motor_type;      //< 受控电机类型
-    void* motor;                 //< 受控电机
-    MotorPID_t velocity_pid;     //< 内环，速度环
-    MotorPID_t position_pid;     //< 外环，位置环
-    uint32_t pos_vel_freq_ratio; //< 内外环频率比
-    uint32_t count;              //< 计数
-    float position;              //< 当前控制的位置
+    bool        enable;             //< 是否启用控制
+    MotorType_t motor_type;         //< 受控电机类型
+    void*       motor;              //< 受控电机
+    MotorPID_t  velocity_pid;       //< 内环，速度环
+    MotorPID_t  position_pid;       //< 外环，位置环
+    uint32_t    pos_vel_freq_ratio; //< 内外环频率比
+    uint32_t    count;              //< 计数
+    float       position;           //< 当前控制的位置
 
     struct
     {
-        float error_threshold; //< 允许的误差范围
-        uint32_t count_max;    //< 保持的计数范围
-        uint32_t counter;      //< 就位计数
-    } settle;                  //< 就位判断
+        float    error_threshold; //< 允许的误差范围
+        uint32_t count_max;       //< 保持的计数范围
+        uint32_t counter;         //< 就位计数
+    } settle;                     //< 就位判断
 
 } Motor_PosCtrl_t;
 
@@ -91,13 +90,13 @@ typedef struct
  */
 typedef struct
 {
-    MotorType_t motor_type; //< 受控电机类型
-    void* motor;            //< 受控电机
+    MotorType_t       motor_type; //< 受控电机类型
+    void*             motor;      //< 受控电机
     MotorPID_Config_t velocity_pid;
     MotorPID_Config_t position_pid;
-    uint32_t pos_vel_freq_ratio; //< 内外环频率比
+    uint32_t          pos_vel_freq_ratio; //< 内外环频率比
 
-    float error_threshold;     //< 允许的误差范围
+    float    error_threshold;  //< 允许的误差范围
     uint32_t settle_count_max; //< 在误差内多少周期认为就位
 } Motor_PosCtrlConfig_t;
 
@@ -106,11 +105,11 @@ typedef struct
  */
 typedef struct
 {
-    bool enable;            //< 是否启用控制
+    bool        enable;     //< 是否启用控制
     MotorType_t motor_type; //< 受控电机类型
-    void* motor;            //< 受控电机
-    MotorPID_t pid;         //< 速度环
-    float velocity;         //< 当前控制的速度
+    void*       motor;      //< 受控电机
+    MotorPID_t  pid;        //< 速度环
+    float       velocity;   //< 当前控制的速度
 } Motor_VelCtrl_t;
 
 /**
@@ -118,8 +117,8 @@ typedef struct
  */
 typedef struct
 {
-    MotorType_t motor_type; //< 受控电机类型
-    void* motor;            //< 受控电机
+    MotorType_t       motor_type; //< 受控电机类型
+    void*             motor;      //< 受控电机
     MotorPID_Config_t pid;
 } Motor_VelCtrlConfig_t;
 
@@ -166,7 +165,10 @@ static inline bool Motor_PosCtrl_IsSettle(Motor_PosCtrl_t* hctrl)
  * @param hctrl 受控对象
  * @param ref 目标值 (unit: deg)
  */
-static inline void Motor_PosCtrl_SetRef(Motor_PosCtrl_t* hctrl, const float ref) { hctrl->position = ref; }
+static inline void Motor_PosCtrl_SetRef(Motor_PosCtrl_t* hctrl, const float ref)
+{
+    hctrl->position = ref;
+}
 
 /**
  * 设置速度环目标值

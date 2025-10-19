@@ -107,12 +107,10 @@ void TB6612_Encoder_DataDecode(TB6612_t* hmotor)
     /* @note: 假定转速不会快到数值溢出 */
     const int16_t counter = __HAL_TIM_GET_COUNTER(hmotor->encoder);
     /* 计算间隔内旋转的角度 */
-    const float delta = (hmotor->feedback_reverse ? -1.0f : 1.0f) * (float)counter /
-                        ((float)hmotor->roto_radio * hmotor->reduction_radio) *
-                        360.0f;
+    const float delta = (hmotor->feedback_reverse ? -1.0f : 1.0f) * (float) counter /
+                        ((float) hmotor->roto_radio * hmotor->reduction_radio) * 360.0f;
     hmotor->angle += delta;
-    hmotor->velocity =
-        delta / hmotor->sampling_period / 360.0f * 60.0f; // 实际转速 (unit: rpm)
+    hmotor->velocity = delta / hmotor->sampling_period / 360.0f * 60.0f; // 实际转速 (unit: rpm)
     /* 清零计数 */
     __HAL_TIM_SET_COUNTER(hmotor->encoder, 0);
 }

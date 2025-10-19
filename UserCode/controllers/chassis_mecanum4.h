@@ -54,11 +54,11 @@ typedef struct
 {
     bool heading_lock; ///< 是否锁定航向
 
-    float wheel_radius;                  ///< 轮子半径 (unit: m)
-    float k_omega;                       ///< O 型：半宽 + 半高；X 型：半宽 - 半高 (unit: m)
+    float                  wheel_radius; ///< 轮子半径 (unit: m)
+    float                  k_omega;      ///< O 型：半宽 + 半高；X 型：半宽 - 半高 (unit: m)
     Mecanum4_ChassisType_t chassis_type; ///< 底盘构型
-    Motor_VelCtrl_t* wheel[MECANUM4_WHEEL_MAX];
-    float last_wheel_angle[MECANUM4_WHEEL_MAX];
+    Motor_VelCtrl_t*       wheel[MECANUM4_WHEEL_MAX];
+    float                  last_wheel_angle[MECANUM4_WHEEL_MAX];
 
     Mecanum4_Velocity_t velocity;
 } Mecanum4_t;
@@ -67,10 +67,10 @@ typedef struct
 {
     bool heading_lock; ///< 设置速度后是否锁定航向
 
-    float wheel_radius;                  ///< 轮子半径 (unit: mm)
-    float wheel_distance_x;              ///< 左右轮距 (unit: mm)
-    float wheel_distance_y;              ///< 前后轮距 (unit: mm)
-    Mecanum4_ChassisType_t chassis_type; ///< 底盘构型
+    float                  wheel_radius;     ///< 轮子半径 (unit: mm)
+    float                  wheel_distance_x; ///< 左右轮距 (unit: mm)
+    float                  wheel_distance_y; ///< 前后轮距 (unit: mm)
+    Mecanum4_ChassisType_t chassis_type;     ///< 底盘构型
 
     Motor_VelCtrl_t* wheel_front_right; ///< 右前方
     Motor_VelCtrl_t* wheel_front_left;  ///< 左前方

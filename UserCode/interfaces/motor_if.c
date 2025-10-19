@@ -127,7 +127,6 @@ void Motor_PosCtrlUpdate(Motor_PosCtrl_t* hctrl)
     else
         hctrl->settle.counter = 0;
 
-
     if (hctrl->count == hctrl->pos_vel_freq_ratio)
     {
         hctrl->position_pid.ref = hctrl->position;

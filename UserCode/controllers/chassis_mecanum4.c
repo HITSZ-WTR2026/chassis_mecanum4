@@ -22,9 +22,11 @@ void Mecanum4_Init(Mecanum4_t* chassis, const Mecanum4_Config_t config)
     chassis->chassis_type = config.chassis_type;
 
     if (config.chassis_type == MECANUM4_O_TYPE)
-        chassis->k_omega = config.wheel_distance_x * 1e-3f * 0.5f + config.wheel_distance_y * 1e-3f * 0.5f;
+        chassis->k_omega = config.wheel_distance_x * 1e-3f * 0.5f +
+                           config.wheel_distance_y * 1e-3f * 0.5f;
     else if (config.chassis_type == MECANUM4_X_TYPE)
-        chassis->k_omega = config.wheel_distance_x * 1e-3f * 0.5f - config.wheel_distance_y * 1e-3f * 0.5f;
+        chassis->k_omega = config.wheel_distance_x * 1e-3f * 0.5f -
+                           config.wheel_distance_y * 1e-3f * 0.5f;
 
     chassis->wheel_radius = config.wheel_radius * 1e-3f;
 
@@ -51,18 +53,22 @@ void Mecanum4_SetVelocity(Mecanum4_t* chassis, const Mecanum4_Velocity_t velocit
          * w_rl = (+ vx + vy - (w + h) * ω) / r
          * w_rr = (+ vx - vy + (w + h) * ω) / r
          */
-        Motor_VelCtrl_SetRef(
-            chassis->wheel[MECANUM4_WHEEL_FR],
-            RPS2RPM((velocity.vx + velocity.vy + chassis->k_omega * DEG2RAD(velocity.omega)) / chassis->wheel_radius));
-        Motor_VelCtrl_SetRef(
-            chassis->wheel[MECANUM4_WHEEL_FL],
-            RPS2RPM((velocity.vx - velocity.vy - chassis->k_omega * DEG2RAD(velocity.omega)) / chassis->wheel_radius));
-        Motor_VelCtrl_SetRef(
-            chassis->wheel[MECANUM4_WHEEL_RL],
-            RPS2RPM((velocity.vx + velocity.vy - chassis->k_omega * DEG2RAD(velocity.omega)) / chassis->wheel_radius));
-        Motor_VelCtrl_SetRef(
-            chassis->wheel[MECANUM4_WHEEL_RR],
-            RPS2RPM((velocity.vx - velocity.vy + chassis->k_omega * DEG2RAD(velocity.omega)) / chassis->wheel_radius));
+        Motor_VelCtrl_SetRef(chassis->wheel[MECANUM4_WHEEL_FR],
+                             RPS2RPM((velocity.vx + velocity.vy +
+                                      chassis->k_omega * DEG2RAD(velocity.omega)) /
+                                     chassis->wheel_radius));
+        Motor_VelCtrl_SetRef(chassis->wheel[MECANUM4_WHEEL_FL],
+                             RPS2RPM((velocity.vx - velocity.vy -
+                                      chassis->k_omega * DEG2RAD(velocity.omega)) /
+                                     chassis->wheel_radius));
+        Motor_VelCtrl_SetRef(chassis->wheel[MECANUM4_WHEEL_RL],
+                             RPS2RPM((velocity.vx + velocity.vy -
+                                      chassis->k_omega * DEG2RAD(velocity.omega)) /
+                                     chassis->wheel_radius));
+        Motor_VelCtrl_SetRef(chassis->wheel[MECANUM4_WHEEL_RR],
+                             RPS2RPM((velocity.vx - velocity.vy +
+                                      chassis->k_omega * DEG2RAD(velocity.omega)) /
+                                     chassis->wheel_radius));
     }
     else if (chassis->chassis_type == MECANUM4_X_TYPE)
     {
@@ -72,18 +78,22 @@ void Mecanum4_SetVelocity(Mecanum4_t* chassis, const Mecanum4_Velocity_t velocit
          * w_rl = (+ vx - vy - (w - h) * ω) / r
          * w_rr = (+ vx + vy + (w - h) * ω) / r
          */
-        Motor_VelCtrl_SetRef(
-            chassis->wheel[MECANUM4_WHEEL_FR],
-            RPS2RPM((velocity.vx - velocity.vy + chassis->k_omega * DEG2RAD(velocity.omega)) / chassis->wheel_radius));
-        Motor_VelCtrl_SetRef(
-            chassis->wheel[MECANUM4_WHEEL_FL],
-            RPS2RPM((velocity.vx + velocity.vy - chassis->k_omega * DEG2RAD(velocity.omega)) / chassis->wheel_radius));
-        Motor_VelCtrl_SetRef(
-            chassis->wheel[MECANUM4_WHEEL_RL],
-            RPS2RPM((velocity.vx - velocity.vy - chassis->k_omega * DEG2RAD(velocity.omega)) / chassis->wheel_radius));
-        Motor_VelCtrl_SetRef(
-            chassis->wheel[MECANUM4_WHEEL_RR],
-            RPS2RPM((velocity.vx + velocity.vy + chassis->k_omega * DEG2RAD(velocity.omega)) / chassis->wheel_radius));
+        Motor_VelCtrl_SetRef(chassis->wheel[MECANUM4_WHEEL_FR],
+                             RPS2RPM((velocity.vx - velocity.vy +
+                                      chassis->k_omega * DEG2RAD(velocity.omega)) /
+                                     chassis->wheel_radius));
+        Motor_VelCtrl_SetRef(chassis->wheel[MECANUM4_WHEEL_FL],
+                             RPS2RPM((velocity.vx + velocity.vy -
+                                      chassis->k_omega * DEG2RAD(velocity.omega)) /
+                                     chassis->wheel_radius));
+        Motor_VelCtrl_SetRef(chassis->wheel[MECANUM4_WHEEL_RL],
+                             RPS2RPM((velocity.vx - velocity.vy -
+                                      chassis->k_omega * DEG2RAD(velocity.omega)) /
+                                     chassis->wheel_radius));
+        Motor_VelCtrl_SetRef(chassis->wheel[MECANUM4_WHEEL_RR],
+                             RPS2RPM((velocity.vx + velocity.vy +
+                                      chassis->k_omega * DEG2RAD(velocity.omega)) /
+                                     chassis->wheel_radius));
     }
 }
 
@@ -103,30 +113,35 @@ void Mecanum4_ControlUpdate(Mecanum4_t* chassis)
 
         for (size_t i = 0; i < MECANUM4_WHEEL_MAX; i++)
         {
-            const float current_angle    = Motor_GetAngle(chassis->wheel[i]->motor_type, chassis->wheel[i]->motor);
+            const float current_angle    = Motor_GetAngle(chassis->wheel[i]->motor_type,
+                                                       chassis->wheel[i]->motor);
             wheel_delta_theta[i]         = current_angle - chassis->last_wheel_angle[i];
             chassis->last_wheel_angle[i] = current_angle;
         }
 
         float delta_theta_rad;
         if (chassis->chassis_type == MECANUM4_O_TYPE)
-            delta_theta_rad = DEG2RAD(chassis->wheel_radius / (4 * chassis->k_omega) *
-                                      (wheel_delta_theta[MECANUM4_WHEEL_FR] - wheel_delta_theta[MECANUM4_WHEEL_FL] +
-                                       wheel_delta_theta[MECANUM4_WHEEL_RR] + wheel_delta_theta[MECANUM4_WHEEL_RL]));
+            delta_theta_rad = DEG2RAD(
+                    chassis->wheel_radius / (4 * chassis->k_omega) *
+                    (wheel_delta_theta[MECANUM4_WHEEL_FR] - wheel_delta_theta[MECANUM4_WHEEL_FL] +
+                     wheel_delta_theta[MECANUM4_WHEEL_RR] + wheel_delta_theta[MECANUM4_WHEEL_RL]));
         else if (chassis->chassis_type == MECANUM4_X_TYPE)
-            delta_theta_rad = DEG2RAD(chassis->wheel_radius / (4 * chassis->k_omega) *
-                                      (wheel_delta_theta[MECANUM4_WHEEL_FR] - wheel_delta_theta[MECANUM4_WHEEL_FL] -
-                                       wheel_delta_theta[MECANUM4_WHEEL_RR] + wheel_delta_theta[MECANUM4_WHEEL_RL]));
+            delta_theta_rad = DEG2RAD(
+                    chassis->wheel_radius / (4 * chassis->k_omega) *
+                    (wheel_delta_theta[MECANUM4_WHEEL_FR] - wheel_delta_theta[MECANUM4_WHEEL_FL] -
+                     wheel_delta_theta[MECANUM4_WHEEL_RR] + wheel_delta_theta[MECANUM4_WHEEL_RL]));
         else // never
             return;
 
         // 将车身速度向反方向旋转 delta_theta
-        const float _sin_delta_theta = sinf(-delta_theta_rad), _cos_delta_theta = cosf(-delta_theta_rad);
-        Mecanum4_SetVelocity(
-            chassis, (Mecanum4_Velocity_t){
-                         .vx    = chassis->velocity.vx * _cos_delta_theta - chassis->velocity.vy * _sin_delta_theta,
-                         .vy    = chassis->velocity.vx * _sin_delta_theta + chassis->velocity.vy * _cos_delta_theta,
-                         .omega = chassis->velocity.omega});
+        const float _sin_delta_theta = sinf(-delta_theta_rad),
+                    _cos_delta_theta = cosf(-delta_theta_rad);
+        Mecanum4_SetVelocity(chassis,
+                             (Mecanum4_Velocity_t) { .vx = chassis->velocity.vx * _cos_delta_theta -
+                                                           chassis->velocity.vy * _sin_delta_theta,
+                                                     .vy = chassis->velocity.vx * _sin_delta_theta +
+                                                           chassis->velocity.vy * _cos_delta_theta,
+                                                     .omega = chassis->velocity.omega });
     }
     // 更新控制
     for (size_t i = 0; i < MECANUM4_WHEEL_MAX; i++)
