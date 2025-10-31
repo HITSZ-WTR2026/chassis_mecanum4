@@ -109,6 +109,7 @@ void Mecanum4_ControlUpdate(Mecanum4_t* chassis)
 {
     if (chassis->heading_lock)
     {
+        // TODO: make heading lock thread safe
         float wheel_delta_theta[MECANUM4_WHEEL_MAX];
 
         for (size_t i = 0; i < MECANUM4_WHEEL_MAX; i++)
@@ -124,7 +125,7 @@ void Mecanum4_ControlUpdate(Mecanum4_t* chassis)
             delta_theta_rad = DEG2RAD(
                     chassis->wheel_radius / (4 * chassis->k_omega) *
                     (wheel_delta_theta[MECANUM4_WHEEL_FR] - wheel_delta_theta[MECANUM4_WHEEL_FL] +
-                     wheel_delta_theta[MECANUM4_WHEEL_RR] + wheel_delta_theta[MECANUM4_WHEEL_RL]));
+                     wheel_delta_theta[MECANUM4_WHEEL_RR] - wheel_delta_theta[MECANUM4_WHEEL_RL]));
         else if (chassis->chassis_type == MECANUM4_X_TYPE)
             delta_theta_rad = DEG2RAD(
                     chassis->wheel_radius / (4 * chassis->k_omega) *
