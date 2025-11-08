@@ -2,11 +2,12 @@
  * @file    chassis_mecanum4.h
  * @author  syhanjin
  * @date    2025-10-17
- * @brief   the 4 wheels Mecanum chassis controller
+ * @brief   the 4 wheels Mecanum chassis driver
+ *
+ * @note    降级到 drivers，因为此时本驱动已经不包括控制的功能，仅负责正逆运动学解算
  */
 #ifndef CHASSIS_MECANUM4_H
 #define CHASSIS_MECANUM4_H
-#include <stdbool.h>
 
 /**
  * Dependence: https://github.com/HITSZ-WTR2026/motor_drivers
@@ -20,7 +21,7 @@
  */
 #define RPS2RPM(__RPS__) ((__RPS__) * 60.0f / (2 * M_PI))
 
-#define DEG2RAD(__DEG__) ((__DEG__) * M_PI / 180.0f)
+#define DEG2RAD(__DEG__) ((__DEG__) * (float) M_PI / 180.0f)
 
 typedef enum
 {
@@ -30,13 +31,6 @@ typedef enum
     MECANUM4_WHEEL_RR,      ///< 右后轮
     MECANUM4_WHEEL_MAX
 } Mecanum4_WheelType_t;
-
-typedef struct
-{
-    float vx;    ///< 指向车体前方 (unit: m/s)
-    float vy;    ///< 指向车体左侧 (unit: m/s)
-    float omega; ///< 向上（逆时针）为正 (unit: deg/s)
-} Mecanum4_Velocity_t;
 
 /**
  * @enum    Mecanum4_ChassisType_t
@@ -52,21 +46,14 @@ typedef enum
 
 typedef struct
 {
-    bool heading_lock; ///< 是否锁定航向
-
     float                  wheel_radius; ///< 轮子半径 (unit: m)
     float                  k_omega;      ///< O 型：半宽 + 半高；X 型：半宽 - 半高 (unit: m)
     Mecanum4_ChassisType_t chassis_type; ///< 底盘构型
     Motor_VelCtrl_t*       wheel[MECANUM4_WHEEL_MAX];
-    float                  last_wheel_angle[MECANUM4_WHEEL_MAX];
-
-    Mecanum4_Velocity_t velocity;
 } Mecanum4_t;
 
 typedef struct
 {
-    bool heading_lock; ///< 设置速度后是否锁定航向
-
     float                  wheel_radius;     ///< 轮子半径 (unit: mm)
     float                  wheel_distance_x; ///< 左右轮距 (unit: mm)
     float                  wheel_distance_y; ///< 前后轮距 (unit: mm)
@@ -78,8 +65,13 @@ typedef struct
     Motor_VelCtrl_t* wheel_rear_right;  ///< 右后方
 } Mecanum4_Config_t;
 
-void Mecanum4_Init(Mecanum4_t* chassis, Mecanum4_Config_t config);
-void Mecanum4_SetVelocity(Mecanum4_t* chassis, Mecanum4_Velocity_t velocity);
-void Mecanum4_ControlUpdate(Mecanum4_t* chassis);
+void Mecanum4_Init(Mecanum4_t* chassis, const Mecanum4_Config_t* config);
+void Mecanum4_ApplyVelocity(Mecanum4_t* chassis, float vx, float vy, float wz);
+void Mecanum4_Update(Mecanum4_t* chassis);
+
+// forward kinematics solutions
+float Mecanum4Forward_GetYaw(const Mecanum4_t* chassis);
+float Mecanum4Forward_GetX(const Mecanum4_t* chassis);
+float Mecanum4Forward_GetY(const Mecanum4_t* chassis);
 
 #endif // CHASSIS_MECANUM4_H
